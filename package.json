@@ -1,5 +1,5 @@
 {
-  "name": "abac-engine",
+  "name": "@surety007/abac-engine",
   "version": "1.1.0",
   "description": "True Attribute-Based Access Control (ABAC) engine for Node.js - Authorization decisions based purely on attributes",
   "main": "dist/index.js",
@@ -49,11 +49,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/astralstriker/abac-engine.git"
+    "url": "git+https://github.com/Surety007/abac-engine.git"
   },
-  "homepage": "https://github.com/astralstriker/abac-engine#readme",
+  "homepage": "https://github.com/Surety007/abac-engine#readme",
   "bugs": {
-    "url": "https://github.com/astralstriker/abac-engine/issues"
+    "url": "https://github.com/Surety007/abac-engine/issues"
   },
   "dependencies": {},
   "peerDependencies": {
@@ -79,11 +79,10 @@
     "typescript": "^5.3.0"
   },
   "files": [
-    "dist/**/*",
+    "dist",
     "README.md",
-    "CHANGELOG.md",
     "LICENSE",
-    "docs/**/*"
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=16.0.0",
@@ -91,7 +90,8 @@
   },
   "sideEffects": false,
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "jest": {
     "preset": "ts-jest",
