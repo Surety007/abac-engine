@@ -8,4 +8,3 @@
 
 export { AttributeResolver } from './AttributeResolver';
 export { PolicyEvaluator } from './PolicyEvaluator';
-

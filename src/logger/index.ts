@@ -6,4 +6,3 @@
  */
 
 export { ConsoleLogger, createLogger, ILogger, LogLevel, SilentLogger } from './logger';
-
