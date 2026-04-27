@@ -1,0 +1,28 @@
+# Code owners for @surety007/abac-engine
+#
+# Code Owner review is required by the branch ruleset on `main`.
+# Listed owners are auto-requested for review on every PR touching matched paths.
+#
+# Order matters: the LAST matching pattern wins for a given file.
+# Keep the catch-all rule first so more specific rules can override it.
+
+# Default: every file requires review from a maintainer.
+* @Surety007/abac-engine-maintainers
+
+# Build, CI, release, and supply-chain critical configuration.
+/.github/                  @Surety007/abac-engine-maintainers
+/.github/workflows/        @Surety007/abac-engine-maintainers
+/package.json              @Surety007/abac-engine-maintainers
+/package-lock.json         @Surety007/abac-engine-maintainers
+/tsconfig.json             @Surety007/abac-engine-maintainers
+/tsconfig.test.json        @Surety007/abac-engine-maintainers
+/.eslintrc.js              @Surety007/abac-engine-maintainers
+/.prettierrc               @Surety007/abac-engine-maintainers
+/.npmignore                @Surety007/abac-engine-maintainers
+
+# Governance & security docs.
+/CODEOWNERS                @Surety007/abac-engine-maintainers
+/.github/CODEOWNERS        @Surety007/abac-engine-maintainers
+/SECURITY.md               @Surety007/abac-engine-maintainers
+/MAINTAINERS.md            @Surety007/abac-engine-maintainers
+/LICENSE                   @Surety007/abac-engine-maintainers

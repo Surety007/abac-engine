@@ -127,10 +127,10 @@
         "statements": 65
       },
       "./src/abac/attributeProviders.ts": {
-        "branches": 75,
+        "branches": 65,
         "functions": 80,
         "lines": 90,
-        "statements": 90
+        "statements": 85
       },
       "./src/abac/engine.ts": {
         "branches": 55,

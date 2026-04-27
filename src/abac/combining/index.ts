@@ -14,4 +14,3 @@ export { ICombiningAlgorithm } from './ICombiningAlgorithm';
 export { OnlyOneApplicableAlgorithm } from './OnlyOneApplicableAlgorithm';
 export { PermitOverridesAlgorithm } from './PermitOverridesAlgorithm';
 export { PermitUnlessDenyAlgorithm } from './PermitUnlessDenyAlgorithm';
-
