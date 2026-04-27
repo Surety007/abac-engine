@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2026-04-27
+
+### Changed
+
+- Republished as `@surety007/abac-engine`, an internally maintained,
+  open-source fork.
+- Source is byte-equivalent to upstream `abac-engine@1.1.0` — no behavioral
+  changes.
+
+### Notes
+
+- Issue tracker, PR review, and releases now happen at
+  <https://github.com/Surety007/abac-engine>.
+- Future versions will be cut independently of the upstream `abac-engine`
+  package on npm.
+
 ## [1.1.0] - 2025-11-06
 
 ### Added - Policy Persistence Features

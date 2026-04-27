@@ -1,5 +1,14 @@
 # ABAC Engine for Node.js
 
+![npm version](https://img.shields.io/npm/v/@surety007/abac-engine)
+![npm downloads](https://img.shields.io/npm/dm/@surety007/abac-engine)
+![CI](https://github.com/Surety007/abac-engine/actions/workflows/ci.yml/badge.svg)
+
+> **Note:** This is `@surety007/abac-engine`, an internally maintained,
+> open-source fork of upstream `abac-engine` 1.1.0. Issues and PRs go to
+> <https://github.com/Surety007/abac-engine>. Releases are cut independently of
+> upstream.
+
 A powerful, zero-dependency **Attribute-Based Access Control (ABAC)** engine for
 Node.js and TypeScript. Make authorization decisions based on attributes instead
 of roles.
@@ -36,7 +45,7 @@ This package implements the PDP and provides optional PIP implementations.
 ## Installation
 
 ```bash
-npm install abac-engine
+npm install @surety007/abac-engine
 ```
 
 ## Quick Start
@@ -47,7 +56,7 @@ import {
   PolicyBuilder,
   AttributeRef,
   CombiningAlgorithm
-} from 'abac-engine';
+} from '@surety007/abac-engine';
 
 // 1. Create a policy
 const policy = PolicyBuilder.create('document-access')
@@ -293,7 +302,7 @@ Attribute providers fetch attributes dynamically during evaluation:
 import {
   InMemoryAttributeProvider,
   EnvironmentAttributeProvider
-} from 'abac-engine';
+} from '@surety007/abac-engine';
 
 // In-memory provider for subjects/resources
 const subjectProvider = new InMemoryAttributeProvider('subject', 'users');
@@ -333,7 +342,7 @@ policies - giving you complete flexibility in how you store and manage them
 import {
   loadPoliciesFromFile,
   loadAndValidatePoliciesFromFile
-} from 'abac-engine';
+} from '@surety007/abac-engine';
 
 // Basic load
 const policies = await loadPoliciesFromFile('./policies.json');
@@ -347,7 +356,7 @@ const { policies, validationResults } =
 #### From JSON Strings
 
 ```typescript
-import { loadPoliciesFromJSON } from 'abac-engine';
+import { loadPoliciesFromJSON } from '@surety007/abac-engine';
 
 const jsonString =
   '[{"id": "policy-1", "version": "1.0.0", "effect": "Permit", ...}]';
@@ -364,7 +373,7 @@ import {
   savePoliciesToFile,
   saveAndValidatePolicyToFile,
   saveAndValidatePoliciesToFile
-} from 'abac-engine';
+} from '@surety007/abac-engine';
 
 // Save a single policy
 const policy = PolicyBuilder.create('my-policy')
@@ -391,7 +400,7 @@ await saveAndValidatePoliciesToFile(
 #### Export to JSON Strings
 
 ```typescript
-import { exportPolicyToJSON, exportPoliciesToJSON } from 'abac-engine';
+import { exportPolicyToJSON, exportPoliciesToJSON } from '@surety007/abac-engine';
 
 // Export single policy (pretty-printed by default)
 const policyJson = exportPolicyToJSON(policy);
@@ -418,7 +427,7 @@ model AbacPolicy {
 }
 
 // Your code
-import { validatePolicy } from 'abac-engine';
+import { validatePolicy } from '@surety007/abac-engine';
 
 // Load policies
 const policies = await prisma.abacPolicy.findMany();
@@ -447,7 +456,7 @@ const decision = await engine.evaluate(request, dbPolicies);
 import {
   savePoliciesToFile,
   loadAndValidatePoliciesFromFile
-} from 'abac-engine';
+} from '@surety007/abac-engine';
 
 // Save policies to version-controlled file
 const policies = [
@@ -462,7 +471,7 @@ await savePoliciesToFile(policies, './config/policies.json');
 #### Hot Reload Policies
 
 ```typescript
-import { loadPoliciesFromFile } from 'abac-engine';
+import { loadPoliciesFromFile } from '@surety007/abac-engine';
 import { watch } from 'fs';
 
 let currentPolicies: ABACPolicy[] = [];
@@ -484,7 +493,7 @@ watch('./policies.json', async () => {
 #### Migration: Export from Database to Files
 
 ```typescript
-import { savePoliciesToFile } from 'abac-engine';
+import { savePoliciesToFile } from '@surety007/abac-engine';
 
 // Export policies from database to file system
 async function exportPolicies() {
@@ -499,7 +508,7 @@ await exportPolicies();
 #### Import Policies into Database
 
 ```typescript
-import { loadAndValidatePoliciesFromFile } from 'abac-engine';
+import { loadAndValidatePoliciesFromFile } from '@surety007/abac-engine';
 
 async function importPolicies() {
   const { policies } = await loadAndValidatePoliciesFromFile('./policies.json');
@@ -521,7 +530,7 @@ await importPolicies();
 ### With Caching
 
 ```typescript
-import { PolicyCache } from 'abac-engine';
+import { PolicyCache } from '@surety007/abac-engine';
 
 const cache = new PolicyCache(300); // 5 minutes TTL
 
@@ -738,7 +747,7 @@ AttributeRef.environment(attributeId: string)
 ### Validation
 
 ```typescript
-import { validatePolicy, validatePolicies } from 'abac-engine';
+import { validatePolicy, validatePolicies } from '@surety007/abac-engine';
 
 // Validate single policy
 const result = validatePolicy(policy);
@@ -794,7 +803,7 @@ const policy = PolicyBuilder.create('risky-operation')
 ### Performance Optimization
 
 ```typescript
-import { filterPoliciesByTarget, groupPoliciesByEffect } from 'abac-engine';
+import { filterPoliciesByTarget, groupPoliciesByEffect } from '@surety007/abac-engine';
 
 // Pre-filter policies before evaluation
 const relevantPolicies = filterPoliciesByTarget(allPolicies, {
@@ -841,7 +850,7 @@ production-safe without configuration.
 #### Using the Default Console Logger
 
 ```typescript
-import { ABACEngine, ConsoleLogger, LogLevel } from 'abac-engine';
+import { ABACEngine, ConsoleLogger, LogLevel } from '@surety007/abac-engine';
 
 const engine = new ABACEngine({
   combiningAlgorithm: CombiningAlgorithm.DenyOverrides,
@@ -862,7 +871,7 @@ const engine = new ABACEngine({
 Integrate with your existing logging solution (Winston, Pino, Bunyan, etc.):
 
 ```typescript
-import { ILogger } from 'abac-engine';
+import { ILogger } from '@surety007/abac-engine';
 import winston from 'winston';
 
 class WinstonLogger implements ILogger {
@@ -908,7 +917,7 @@ import {
   InMemoryAttributeProvider,
   ConsoleLogger,
   LogLevel
-} from 'abac-engine';
+} from '@surety007/abac-engine';
 
 const logger = new ConsoleLogger(LogLevel.Debug);
 
@@ -937,7 +946,7 @@ const engine = new ABACEngine({
 Testing is simple - just pass arrays of policies:
 
 ```typescript
-import { ABACEngine, PolicyBuilder, Decision } from 'abac-engine';
+import { ABACEngine, PolicyBuilder, Decision } from '@surety007/abac-engine';
 
 describe('Authorization', () => {
   it('should allow owners to edit', async () => {
@@ -1006,7 +1015,7 @@ import type {
   Condition,
   Effect,
   Decision
-} from 'abac-engine';
+} from '@surety007/abac-engine';
 ```
 
 ## Performance
@@ -1083,7 +1092,7 @@ Issues and PRs welcome on GitHub!
 
 ---
 
-**Ready to get started?** Install now: `npm install abac-engine`
+**Ready to get started?** Install now: `npm install @surety007/abac-engine`
 
 **Need help?** Check the [Glossary](./docs/GLOSSARY.md) for terminology or
 [Examples](./docs/EXAMPLES.md) for real-world use cases.
