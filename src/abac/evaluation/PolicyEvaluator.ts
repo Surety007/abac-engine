@@ -261,7 +261,7 @@ export class PolicyEvaluator {
     }
 
     const leftValue = await this.resolveValue(left, request);
-    const rightValue = right ? await this.resolveValue(right, request) : undefined;
+    const rightValue = right !== undefined ? await this.resolveValue(right, request) : undefined;
 
     switch (operator) {
       case ComparisonOperator.Equals:

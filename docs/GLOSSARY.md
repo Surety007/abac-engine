@@ -491,13 +491,14 @@ Settings that control how the ABAC engine behaves.
 
 ```typescript
 interface ABACEngineConfig {
-  policies: ABACPolicy[];               // Initial policies
+  combiningAlgorithm?: CombiningAlgorithm; // Policy combining behavior
   attributeProviders?: AttributeProvider[]; // Attribute sources
   enableAuditLog?: boolean;             // Log all decisions
   enablePerformanceMetrics?: boolean;   // Track metrics
-  cacheResults?: boolean;               // Cache decisions
-  cacheTTL?: number;                    // Cache lifetime (seconds)
-  maxEvaluationTime?: number;           // Timeout (milliseconds)
+  sortPoliciesByPriority?: boolean;     // Sort high priority first before evaluation
+  cacheResults?: boolean;               // Reserved; decision caching is not implemented yet
+  cacheTTL?: number;                    // Reserved for future decision caching
+  maxEvaluationTime?: number;           // Reserved; timeout is not enforced yet
   logger?: ILogger;                     // Custom logger
 }
 ```
@@ -584,19 +585,11 @@ interface EvaluationMetrics {
 
 ### Cache
 
-Temporary storage of evaluation results to improve performance.
+Temporary storage used to improve performance.
 
-**Cache Key**: Hash of request + policies
-
-**Benefits:**
-- Faster repeated evaluations
-- Reduced database queries
-- Lower latency
-
-**Considerations:**
-- Cache invalidation when policies change
-- TTL (time-to-live) configuration
-- Memory usage
+`ABACEngine` does not currently cache authorization decisions. Use
+`PolicyCache` for explicit policy loading caches and `CachedAttributeProvider`
+for attribute provider caches.
 
 ---
 

@@ -378,6 +378,7 @@ export interface ABACEngineConfig {
   functionRegistry?: Map<string, ConditionFunction>;
   enableAuditLog?: boolean;
   enablePerformanceMetrics?: boolean;
+  sortPoliciesByPriority?: boolean;
   cacheResults?: boolean;
   cacheTTL?: number;
   maxEvaluationTime?: number;

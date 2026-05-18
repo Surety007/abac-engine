@@ -50,13 +50,14 @@ constructor(config: ABACEngineConfig)
 
 ```typescript
 interface ABACEngineConfig {
-  policies: ABACPolicy[];
+  combiningAlgorithm?: CombiningAlgorithm; // Default: DenyOverrides
   attributeProviders?: AttributeProvider[];
   enableAuditLog?: boolean; // Default: true
   enablePerformanceMetrics?: boolean; // Default: true
-  cacheResults?: boolean; // Default: false
-  cacheTTL?: number; // Default: 300 (seconds)
-  maxEvaluationTime?: number; // Default: 5000 (ms)
+  sortPoliciesByPriority?: boolean; // Default: true for FirstApplicable, false otherwise
+  cacheResults?: boolean; // Reserved; decision caching is not implemented yet
+  cacheTTL?: number; // Reserved for future decision caching
+  maxEvaluationTime?: number; // Reserved; evaluation timeout is not enforced yet
   logger?: ILogger; // Default: SilentLogger
 }
 ```
@@ -64,10 +65,10 @@ interface ABACEngineConfig {
 **Example:**
 
 ```typescript
-import { ABACEngine } from 'abac-engine';
+import { ABACEngine, CombiningAlgorithm } from 'abac-engine';
 
 const engine = new ABACEngine({
-  policies: myPolicies,
+  combiningAlgorithm: CombiningAlgorithm.DenyOverrides,
   enableAuditLog: true,
   logger: new ConsoleLogger()
 });
@@ -84,25 +85,32 @@ Evaluate an authorization request against policies.
 ```typescript
 async evaluate(
   request: ABACRequest,
-  policies?: ABACPolicy[]
+  policies: ABACPolicy[]
 ): Promise<ABACDecision>
 ```
 
 **Parameters:**
 
 - `request` - The authorization request
-- `policies` - Optional policies to use (overrides config policies)
+- `policies` - Policies to evaluate for the request
 
 **Returns:** `Promise<ABACDecision>`
 
 **Example:**
 
 ```typescript
-const decision = await engine.evaluate({
-  subject: { id: 'user-123', attributes: { department: 'Engineering' } },
-  resource: { id: 'doc-456', attributes: { owner: 'user-123' } },
-  action: { id: 'read' }
-});
+const decision = await engine.evaluate(
+  {
+    subject: { id: 'user-123', attributes: { department: 'Engineering' } },
+    resource: {
+      id: 'doc-456',
+      type: 'document',
+      attributes: { owner: 'user-123' }
+    },
+    action: { id: 'read' }
+  },
+  policies
+);
 
 if (decision.decision === Decision.Permit) {
   // Allow access
@@ -211,20 +219,9 @@ const recentLogs = engine.getAuditLogs(100);
 
 ---
 
-##### clearCache()
-
-Clear the result cache.
-
-```typescript
-clearCache(): void
-```
-
-**Example:**
-
-```typescript
-// Call when policies change
-engine.clearCache();
-```
+Decision result caching is not implemented in `ABACEngine`; there is no
+`clearCache()` engine method. Use `PolicyCache` or `CachedAttributeProvider`
+for explicit policy or attribute caching.
 
 ---
 

@@ -272,8 +272,9 @@ do:
 
 **`FirstApplicable`**
 
-- Use the first policy that matches
-- Order matters!
+- Evaluates matching policies by descending `priority` by default
+- Equal priorities preserve the input order
+- Set `sortPoliciesByPriority: false` to use raw input order
 
 **`OnlyOneApplicable`**
 
