@@ -37,13 +37,21 @@ export class ABACEngine {
   private policyEvaluator: PolicyEvaluator;
 
   constructor(config: ABACEngineConfig) {
+    const combiningAlgorithm = config.combiningAlgorithm ?? CombiningAlgorithm.DenyOverrides;
+    const sortPoliciesByPriority =
+      config.sortPoliciesByPriority !== undefined
+        ? config.sortPoliciesByPriority
+        : combiningAlgorithm === CombiningAlgorithm.FirstApplicable;
+
     this.config = {
       enableAuditLog: true,
       enablePerformanceMetrics: true,
       cacheResults: false,
       cacheTTL: 300,
       maxEvaluationTime: 5000,
-      ...config
+      ...config,
+      combiningAlgorithm,
+      sortPoliciesByPriority
     };
 
     // Initialize logger (default to SilentLogger if not provided)
@@ -65,11 +73,6 @@ export class ABACEngine {
       this.functionRegistry,
       this.attributeResolver
     );
-
-    // Set default combining algorithm if not provided
-    if (!this.config.combiningAlgorithm) {
-      this.config.combiningAlgorithm = CombiningAlgorithm.DenyOverrides;
-    }
 
     // Register custom functions from config
     if (config.functionRegistry) {
@@ -93,11 +96,12 @@ export class ABACEngine {
 
       // Enhance request with additional attributes from providers
       const enhancedRequest = await this.attributeResolver.enhanceRequest(request);
+      const evaluationPolicies = this.orderPoliciesForEvaluation(policies);
 
       // Find applicable policies
       const applicablePolicies = await this.policyEvaluator.findApplicablePolicies(
         enhancedRequest,
-        policies
+        evaluationPolicies
       );
 
       // Evaluate applicable policies
@@ -190,6 +194,24 @@ export class ABACEngine {
 
     const combiningAlgorithm = CombiningAlgorithmFactory.getAlgorithm(algorithm);
     return combiningAlgorithm.combine(results);
+  }
+
+  /**
+   * Order policies before evaluation when priority sorting is enabled.
+   * Equal priorities keep their input order so existing policy registries stay stable.
+   */
+  private orderPoliciesForEvaluation(policies: ABACPolicy[]): ABACPolicy[] {
+    if (!this.config.sortPoliciesByPriority) {
+      return policies;
+    }
+
+    return policies
+      .map((policy, index) => ({ policy, index }))
+      .sort((a, b) => {
+        const priorityDiff = (b.policy.priority ?? 0) - (a.policy.priority ?? 0);
+        return priorityDiff !== 0 ? priorityDiff : a.index - b.index;
+      })
+      .map(({ policy }) => policy);
   }
 
   /**

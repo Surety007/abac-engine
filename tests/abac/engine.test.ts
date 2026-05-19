@@ -141,6 +141,32 @@ describe('ABAC Engine', () => {
       expect(decision.decision).toBe('NotApplicable');
     });
 
+    test.each([
+      ['enabled', false],
+      ['count', 0],
+      ['text', '']
+    ] as const)(
+      'should compare subject attribute %s to falsy literal values',
+      async (key, value) => {
+        const policy = PolicyBuilder.create(`falsy-${key}-policy`)
+          .version('1.0.0')
+          .permit()
+          .condition(ConditionBuilder.equals(AttributeRef.subject(key), value))
+          .build();
+
+        const request: ABACRequest = {
+          subject: { id: 'user123', attributes: { [key]: value } },
+          resource: { id: 'doc001', type: 'document', attributes: {} },
+          action: { id: 'read' }
+        };
+
+        const decision = await engine.evaluate(request, [policy]);
+
+        expect(decision.decision).toBe('Permit');
+        expect(decision.matchedPolicies[0]?.id).toBe(`falsy-${key}-policy`);
+      }
+    );
+
     test('should evaluate complex attribute combinations', async () => {
       const policy = PolicyBuilder.create('department-clearance-policy')
         .version('1.0.0')
@@ -300,6 +326,109 @@ describe('ABAC Engine', () => {
       ]);
 
       expect(decision.decision).toBe('Permit');
+    });
+
+    test('first-applicable should evaluate higher priority policies first by default', async () => {
+      const lowPriorityPermit = PolicyBuilder.create('low-priority-permit')
+        .version('1.0.0')
+        .permit()
+        .priority(100)
+        .condition(ConditionBuilder.equals(Attributes.action.id, 'read'))
+        .build();
+
+      const highPriorityDeny = PolicyBuilder.create('high-priority-deny')
+        .version('1.0.0')
+        .deny()
+        .priority(9000)
+        .condition(ConditionBuilder.equals(Attributes.action.id, 'read'))
+        .build();
+
+      const request: ABACRequest = {
+        subject: { id: 'user123', attributes: {} },
+        resource: { id: 'doc001', type: 'document', attributes: {} },
+        action: { id: 'read' }
+      };
+
+      const firstApplicableEngine = new ABACEngine({
+        combiningAlgorithm: CombiningAlgorithm.FirstApplicable,
+        attributeProviders: [subjectProvider, resourceProvider, environmentProvider]
+      });
+
+      const decision = await firstApplicableEngine.evaluate(request, [
+        lowPriorityPermit,
+        highPriorityDeny
+      ]);
+
+      expect(decision.decision).toBe('Deny');
+      expect(decision.matchedPolicies[0]?.id).toBe('high-priority-deny');
+    });
+
+    test('first-applicable should preserve input order when priority sorting is disabled', async () => {
+      const lowPriorityPermit = PolicyBuilder.create('low-priority-permit')
+        .version('1.0.0')
+        .permit()
+        .priority(100)
+        .condition(ConditionBuilder.equals(Attributes.action.id, 'read'))
+        .build();
+
+      const highPriorityDeny = PolicyBuilder.create('high-priority-deny')
+        .version('1.0.0')
+        .deny()
+        .priority(9000)
+        .condition(ConditionBuilder.equals(Attributes.action.id, 'read'))
+        .build();
+
+      const request: ABACRequest = {
+        subject: { id: 'user123', attributes: {} },
+        resource: { id: 'doc001', type: 'document', attributes: {} },
+        action: { id: 'read' }
+      };
+
+      const firstApplicableEngine = new ABACEngine({
+        combiningAlgorithm: CombiningAlgorithm.FirstApplicable,
+        sortPoliciesByPriority: false,
+        attributeProviders: [subjectProvider, resourceProvider, environmentProvider]
+      });
+
+      const decision = await firstApplicableEngine.evaluate(request, [
+        lowPriorityPermit,
+        highPriorityDeny
+      ]);
+
+      expect(decision.decision).toBe('Permit');
+      expect(decision.matchedPolicies[0]?.id).toBe('low-priority-permit');
+    });
+
+    test('first-applicable should preserve input order for equal priorities', async () => {
+      const firstPermit = PolicyBuilder.create('first-equal-priority-permit')
+        .version('1.0.0')
+        .permit()
+        .priority(5000)
+        .condition(ConditionBuilder.equals(Attributes.action.id, 'read'))
+        .build();
+
+      const secondDeny = PolicyBuilder.create('second-equal-priority-deny')
+        .version('1.0.0')
+        .deny()
+        .priority(5000)
+        .condition(ConditionBuilder.equals(Attributes.action.id, 'read'))
+        .build();
+
+      const request: ABACRequest = {
+        subject: { id: 'user123', attributes: {} },
+        resource: { id: 'doc001', type: 'document', attributes: {} },
+        action: { id: 'read' }
+      };
+
+      const firstApplicableEngine = new ABACEngine({
+        combiningAlgorithm: CombiningAlgorithm.FirstApplicable,
+        attributeProviders: [subjectProvider, resourceProvider, environmentProvider]
+      });
+
+      const decision = await firstApplicableEngine.evaluate(request, [firstPermit, secondDeny]);
+
+      expect(decision.decision).toBe('Permit');
+      expect(decision.matchedPolicies[0]?.id).toBe('first-equal-priority-permit');
     });
   });
 

@@ -47,7 +47,7 @@ interface ABACPolicy {
   effect: 'Permit' | 'Deny'; // What happens when condition matches
   target?: PolicyTarget; // Optional pre-filter
   condition?: Condition; // Main evaluation logic
-  priority?: number; // Higher = evaluated first
+  priority?: number; // Higher = evaluated first when priority sorting is enabled
   obligations?: Obligation[]; // Required actions
   advice?: Advice[]; // Optional recommendations
   metadata?: PolicyMetadata; // Creation info, tags, etc.
@@ -812,6 +812,10 @@ PolicyBuilder.create('emergency-access').description(
 ```
 
 ### 4. Use Priority for Exceptions
+
+`ABACEngine` enables priority sorting by default when using
+`CombiningAlgorithm.FirstApplicable`. Higher-priority applicable policies are
+evaluated before lower-priority policies; equal priorities preserve input order.
 
 ```typescript
 // Base policy (low priority)
