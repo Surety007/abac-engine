@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-05-19
+
+### Added
+
+- Engine-level policy priority ordering support via `sortPoliciesByPriority` in
+  `ABACEngineConfig`.
+- Deterministic policy ordering with stable tie-breaking (preserves input order
+  for equal priorities).
+- Regression coverage for priority ordering and configuration behavior in
+  `tests/abac/engine.test.ts`.
+
+### Fixed
+
+- `PolicyEvaluator` comparison resolution now correctly handles falsy right-hand
+  values (`false`, `0`, and empty string) using explicit `undefined` checks.
+
+### Changed
+
+- `FirstApplicable` now sorts by descending policy priority by default.
+- Documentation updated to clarify ordering behavior and opt-out path
+  (`sortPoliciesByPriority: false`).
+
 ## [1.1.0] - 2026-04-27
 
 ### Changed
